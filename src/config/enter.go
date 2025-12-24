@@ -29,7 +29,6 @@ func LoadConfig(configPath string) *viper.Viper {
 func defaultConfig() *SystemConfig {
 	return &SystemConfig{
 		Port:              8080,
-		ContextPath:       "/",
 		ExcludeLoginPaths: []string{},
 	}
 }
