@@ -49,7 +49,7 @@ func Initialize(cfg *viper.Viper) {
 
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if level <= zapcore.WarnLevel {
-			return lvl >= level
+			return level <= lvl && lvl <= zapcore.WarnLevel
 		}
 		return lvl <= zapcore.WarnLevel
 	})
