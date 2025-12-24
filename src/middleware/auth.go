@@ -5,20 +5,25 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/gobwas/glob"
+	"github.com/wxq/metaland-blog/src/config"
 	"github.com/wxq/metaland-blog/src/response"
 	"github.com/wxq/metaland-blog/src/utils/constant"
 	"github.com/wxq/metaland-blog/src/utils/jwt"
+	"github.com/wxq/metaland-blog/src/xzap/logger"
 )
-
-var excludeLoginPaths = []string{"/user/login", "/swagger"}
 
 func Authentication() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		requestPath := ctx.FullPath()
 
-		// TODO 鉴权路径白名单
-		for _, path := range excludeLoginPaths {
-			if strings.HasPrefix(requestPath, path) {
+		for _, pattern := range config.SysConfig.ExcludeLoginPaths {
+			matcher, err := glob.Compile(pattern)
+			if err != nil {
+				logger.Errorf("invalid path pattern: %s", pattern)
+				continue
+			}
+			if matcher.Match(requestPath) {
 				ctx.Next()
 				return
 			}

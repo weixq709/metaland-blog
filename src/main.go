@@ -1,9 +1,6 @@
 package main
 
-import (
-	"github.com/wxq/metaland-blog/src/db"
-	"github.com/wxq/metaland-blog/src/router"
-)
+import "github.com/wxq/metaland-blog/src/app"
 
 //go:generate swag init -g ./main.go -o ../docs --outputTypes go,json
 //go:generate swag fmt
@@ -17,6 +14,5 @@ import (
 // @in							header
 // @name						Authorization
 func main() {
-	db.Initialize()
-	router.Start()
+	app.Start()
 }
