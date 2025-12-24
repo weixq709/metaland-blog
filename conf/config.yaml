@@ -2,6 +2,7 @@
 #context_path: /
 exclude_login_paths:
   - /user/login
+  - /user/register
   - /swagger/**
 
 log:
