@@ -8,6 +8,8 @@ type RouteRegistrar interface {
 
 var apis = []RouteRegistrar{
 	new(UserApi),
+	new(ArticleApi),
+	new(CommentApi),
 }
 
 func RegisterRouter(router *gin.RouterGroup) {
