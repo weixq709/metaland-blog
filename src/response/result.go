@@ -2,6 +2,7 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/wxq/metaland-blog/src/xzap/logger"
 )
 
 const (
@@ -38,9 +39,11 @@ func Fail(ctx *gin.Context) {
 }
 
 func FailWithMessage(ctx *gin.Context, message string) {
+	logger.Errorf(message)
 	ctx.JSON(200, &Result{Code: fail, Message: &message})
 }
 
 func FailWithDetail(ctx *gin.Context, code int, message string) {
+	logger.Errorf(message)
 	ctx.JSON(200, &Result{Code: code, Message: &message})
 }

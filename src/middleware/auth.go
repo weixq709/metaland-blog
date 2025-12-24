@@ -31,6 +31,7 @@ func Authentication() gin.HandlerFunc {
 
 		token := strings.TrimPrefix(ctx.GetHeader(constant.Authorization), constant.TokenPrefix)
 		if token == "" {
+			logger.Warn("token is empty")
 			response.FailWithMessage(ctx, "无效token")
 			ctx.Abort()
 			return
@@ -38,6 +39,7 @@ func Authentication() gin.HandlerFunc {
 
 		_, err := jwt.Parse(token)
 		if err != nil {
+			logger.Error(err.Error())
 			response.FailWithMessage(ctx, err.Error())
 			ctx.Abort()
 			return
@@ -46,6 +48,7 @@ func Authentication() gin.HandlerFunc {
 		session := sessions.Default(ctx)
 		userName := session.Get(constant.UserNameKey)
 		if userName == nil || userName == "" {
+			logger.Warnf("用户未登录")
 			response.FailWithMessage(ctx, "用户未登录")
 			ctx.Abort()
 			return
