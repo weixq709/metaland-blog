@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	DefaultConfigPath = "./conf"
+	DefaultConfigPath = "./conf/config.yaml"
 )
 
 func Start() {

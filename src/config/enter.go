@@ -10,12 +10,9 @@ type SystemConfig struct {
 	ExcludeLoginPaths []string `mapstructure:"exclude_login_paths"`
 }
 
-func LoadConfig(configPath string) *viper.Viper {
+func LoadConfig(configFile string) *viper.Viper {
 	configLoader := viper.New()
-	// 设置配置文件名称为config
-	configLoader.SetConfigName("config")
-	configLoader.SetConfigType("yaml")
-	configLoader.AddConfigPath(configPath)
+	configLoader.SetConfigFile(configFile)
 	if err := configLoader.ReadInConfig(); err != nil {
 		panic(err)
 	}

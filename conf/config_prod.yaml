@@ -1,0 +1,27 @@
+port: 8082
+context_path: /blog
+exclude_login_paths:
+  - /user/login
+  - /user/register
+  - /swagger/**
+
+log:
+  level: info
+  path: ./log
+  filename: app.log
+  keep_days: 7
+
+db:
+  username: root
+  password: 123456
+  host: 192.168.3.124
+  port: 3306
+  schema: metaland-blog
+  log_level: info
+  # 慢日志阈值，单位秒
+  slow_threshold: 3
+
+  connection_pool:
+    max_open_connection: 100
+    max_connection_lifetime: 300
+    max_idle_connection: 10
