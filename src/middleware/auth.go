@@ -1,15 +1,18 @@
 package middleware
 
 import (
+	"runtime/debug"
 	"strings"
 
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gobwas/glob"
+	"github.com/pkg/errors"
 	"github.com/wxq/metaland-blog/src/config"
 	"github.com/wxq/metaland-blog/src/response"
 	"github.com/wxq/metaland-blog/src/utils/constant"
-	"github.com/wxq/metaland-blog/src/utils/jwt"
+	xjwt "github.com/wxq/metaland-blog/src/utils/jwt"
 	"github.com/wxq/metaland-blog/src/xzap/logger"
 )
 
@@ -31,15 +34,22 @@ func Authentication() gin.HandlerFunc {
 
 		token := strings.TrimPrefix(ctx.GetHeader(constant.Authorization), constant.TokenPrefix)
 		if token == "" {
-			logger.Warn("token is empty")
+			logger.Warn("无效token")
 			response.FailWithMessage(ctx, "无效token")
 			ctx.Abort()
 			return
 		}
 
-		_, err := jwt.Parse(token)
+		_, err := xjwt.Parse(token)
 		if err != nil {
-			logger.Error(err.Error())
+			var tokenExpiredErr *jwt.TokenExpiredError
+			if errors.As(err, &tokenExpiredErr) {
+				logger.Warn("token过期")
+				response.FailWithMessage(ctx, "token过期")
+				ctx.Abort()
+				return
+			}
+			logger.Errorf("%s\n%s", err.Error(), string(debug.Stack()))
 			response.FailWithMessage(ctx, err.Error())
 			ctx.Abort()
 			return
