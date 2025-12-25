@@ -13,6 +13,6 @@ func (api *ArticleApi) RegisterRoute(parentRouter *gin.RouterGroup) {
 	router.POST("", articleHandler.Create)
 	router.PUT("", articleHandler.Update)
 	router.DELETE("/:articleId", articleHandler.DeleteByID)
-	router.GET("/:articleId", articleHandler.FindByID)
-	router.GET("/FindByPage", articleHandler.FindByPage)
+	router.GET("/findById/:articleId", articleHandler.FindByID)
+	router.GET("/findByPage", articleHandler.FindByPage)
 }
