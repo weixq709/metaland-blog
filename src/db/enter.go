@@ -6,23 +6,25 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/wxq/metaland-blog/src/xzap/logger"
+	xzap "github.com/wxq/metaland-blog/src/xzap/logger"
 	"gorm.io/driver/mysql"
 	_ "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	glogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 )
 
 var GlobalDB *gorm.DB
 
 type DbConfig struct {
-	Username string      `mapstructure:"username"`
-	Password string      `mapstructure:"password"`
-	Host     string      `mapstructure:"host"`
-	Port     int         `mapstructure:"port"`
-	Schema   string      `mapstructure:"schema"`
-	LogLevel string      `mapstructure:"log_level"`
-	Pool     *PoolConfig `mapstructure:"pool"`
+	Username      string      `mapstructure:"username"`
+	Password      string      `mapstructure:"password"`
+	Host          string      `mapstructure:"host"`
+	Port          int         `mapstructure:"port"`
+	Schema        string      `mapstructure:"schema"`
+	LogLevel      string      `mapstructure:"log_level"`
+	SlowThreshold int         `mapstructure:"slow_threshold"`
+	Pool          *PoolConfig `mapstructure:"pool"`
 }
 
 type PoolConfig struct {
@@ -51,7 +53,7 @@ func Initialize(cfg *viper.Viper) error {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
-		//Logger: xzap.Default.LogMode(xzap.Info),
+		Logger: &Logger{logLevel: glogger.Info, SlowThreshold: time.Duration(config.SlowThreshold) * time.Second},
 	})
 	if err != nil {
 		return errors.New(fmt.Sprintf("Failed to connect database, error: %v", err))
@@ -72,7 +74,7 @@ func Initialize(cfg *viper.Viper) error {
 	}
 
 	GlobalDB = db
-	logger.Infof("Initialize datasource successfully")
+	xzap.Infof("Initialize datasource successfully")
 	return nil
 }
 
@@ -91,9 +93,10 @@ func (cfg *DbConfig) Check() error {
 
 func defaultConfig() *DbConfig {
 	return &DbConfig{
-		Host:     "localhost",
-		Port:     3306,
-		LogLevel: "info",
+		Host:          "localhost",
+		Port:          3306,
+		LogLevel:      "info",
+		SlowThreshold: 5,
 	}
 }
 

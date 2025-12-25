@@ -18,6 +18,8 @@ db:
   port: 3306
   schema: metaland-blog
   log_level: info
+  # 慢日志阈值，单位秒
+  slow_threshold: 3
 
   connection_pool:
     max_open_connection: 100
