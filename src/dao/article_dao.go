@@ -11,8 +11,8 @@ var ArticleDao = &articleDao{}
 
 type articleDao struct{}
 
-func (articleDao *articleDao) Create(article entity.Article) error {
-	res := db.GlobalDB.Create(article)
+func (articleDao *articleDao) Create(article *entity.Article) error {
+	res := db.GlobalDB.Create(&article)
 	if res.Error != nil {
 		return res.Error
 	}
@@ -24,9 +24,9 @@ func (articleDao *articleDao) Create(article entity.Article) error {
 
 func (articleDao *articleDao) Update(article entity.Article) error {
 	res := db.GlobalDB.
-		Select("Title,Content,UpdateTime").
-		Where("id = ?", article.ID).
-		Where("userId = ?", article.UserID).
+		Model(&article).
+		Where("user_id = ?", article.UserID).
+		Select("Title", "Content", "UpdateTime").
 		Updates(article)
 
 	if res.Error != nil {
@@ -41,7 +41,7 @@ func (articleDao *articleDao) Update(article entity.Article) error {
 func (articleDao *articleDao) DeleteByID(article entity.Article) error {
 	res := db.GlobalDB.
 		Where("id = ?", article.ID).
-		Where("userId = ?", article.UserID).
+		Where("user_id = ?", article.UserID).
 		Delete(&entity.Article{})
 
 	if res.Error != nil {
@@ -69,7 +69,7 @@ func (articleDao *articleDao) FindByPage(queryPage page.QueryPage, article entit
 	var articles []entity.Article
 	tx := db.GlobalDB.Where("1=1")
 	if article.UserID != 0 {
-		tx = tx.Where("userId = ?", article.UserID)
+		tx = tx.Where("user_id = ?", article.UserID)
 	}
 	res := tx.Offset((queryPage.PageNum - 1) * queryPage.PageSize).
 		Limit(queryPage.PageNum * queryPage.PageSize).
