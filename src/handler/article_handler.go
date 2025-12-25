@@ -6,6 +6,7 @@ import (
 	"github.com/wxq/metaland-blog/src/entity/page"
 	"github.com/wxq/metaland-blog/src/response"
 	"github.com/wxq/metaland-blog/src/service"
+	"github.com/wxq/metaland-blog/src/utils/param"
 )
 
 var articleService = service.ArticleService
@@ -26,12 +27,14 @@ type ArticleRequestHandler struct{}
 func (handler *ArticleRequestHandler) Create(ctx *gin.Context) {
 	var article entity.Article
 	if err := ctx.ShouldBind(&article); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	if err := articleService.Create(ctx, article); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
+		return
 	}
+	response.Success(ctx)
 }
 
 // Update 根据ID修改文章信息
@@ -48,11 +51,11 @@ func (handler *ArticleRequestHandler) Create(ctx *gin.Context) {
 func (handler *ArticleRequestHandler) Update(ctx *gin.Context) {
 	var article entity.Article
 	if err := ctx.ShouldBind(&article); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	if err := articleService.Update(ctx, article); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.Success(ctx)
@@ -70,10 +73,10 @@ func (handler *ArticleRequestHandler) Update(ctx *gin.Context) {
 //	@Router			/article/{articleId} [DELETE]
 //	@Security		BearerAuth
 func (handler *ArticleRequestHandler) DeleteByID(ctx *gin.Context) {
-	articleId := ctx.GetInt64("articleId")
+	articleId := param.Path(ctx).Name("articleId").Value().GetInt64()
 	err := articleService.DeleteByID(ctx, articleId)
 	if err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.Success(ctx)
@@ -87,13 +90,13 @@ func (handler *ArticleRequestHandler) DeleteByID(ctx *gin.Context) {
 //	@Produce		json
 //	@Param			articleId	path		int										true	"文章ID"
 //	@Success		200			{object}	response.Result{data=entity.Article}	"文章信息"
-//	@Router			/article/{articleId} [GET]
+//	@Router			/article/findById/{articleId} [GET]
 //	@Security		BearerAuth
 func (handler *ArticleRequestHandler) FindByID(ctx *gin.Context) {
-	articleId := ctx.GetInt64("articleId")
+	articleId := param.Path(ctx).Name("articleId").Value().GetInt64()
 	articles, err := articleService.FindById(articleId)
 	if err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.SuccessWithData(ctx, articles)
@@ -103,26 +106,30 @@ func (handler *ArticleRequestHandler) FindByID(ctx *gin.Context) {
 //
 //	@Summary		分页查询
 //	@Tags			文章管理
-//	@Description	根据条件分页查询，支持查询指定用户文章列表
+//	@Description	根据条件分页查询，支持查询指定用户文章列表。pageNum默认值为1，pageSize默认值为10。如果未指定userId，则查询全部用户文章，否则进查询指定用户
+//	@Param			pageNum		query	int	false	"当前页"
+//	@Param			pageSize	query	int	false	"每页显示记录条数"
+//	@Param			userId		query	int	false	"用户ID"
+//	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	response.Result{data=[]entity.Article}	"文章列表"
-//	@Router			/article/findAll [GET]
+//	@Router			/article/findByPage [GET]
 //	@Security		BearerAuth
 func (handler *ArticleRequestHandler) FindByPage(ctx *gin.Context) {
 	var article entity.Article
 	queryPage := page.Defaults()
 	if err := ctx.ShouldBindQuery(&queryPage); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
-	if err := ctx.ShouldBind(&article); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+	if err := ctx.ShouldBindQuery(&article); err != nil {
+		_ = ctx.Error(err)
 		return
 	}
 
 	articles, err := articleService.FindByPage(queryPage, article)
 	if err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.SuccessWithData(ctx, articles)

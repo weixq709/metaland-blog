@@ -26,12 +26,12 @@ type UserRequestHandler struct{}
 func (handler *UserRequestHandler) Login(ctx *gin.Context) {
 	var user entity.User
 	if err := ctx.ShouldBind(&user); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	token, err := userService.Login(ctx, user)
 	if err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.SuccessWithData(ctx, token)
@@ -50,11 +50,11 @@ func (handler *UserRequestHandler) Login(ctx *gin.Context) {
 func (handler *UserRequestHandler) Register(ctx *gin.Context) {
 	var user entity.User
 	if err := ctx.ShouldBind(&user); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	if err := userService.Register(user); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.Success(ctx)
@@ -73,7 +73,7 @@ func (handler *UserRequestHandler) FindCurrentUserInfo(ctx *gin.Context) {
 	userName := ctx.GetString(constant.UserNameKey)
 	user, err := service.UserService.FindUserByUserName(userName)
 	if err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	if user == nil {
@@ -99,7 +99,7 @@ func (handler *UserRequestHandler) FindUserByUserName(ctx *gin.Context) {
 	userName := ctx.Param("username")
 	user, err := service.UserService.FindUserByUserName(userName)
 	if err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	if user == nil {

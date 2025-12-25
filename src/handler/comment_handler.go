@@ -5,6 +5,7 @@ import (
 	"github.com/wxq/metaland-blog/src/entity"
 	"github.com/wxq/metaland-blog/src/response"
 	"github.com/wxq/metaland-blog/src/service"
+	"github.com/wxq/metaland-blog/src/utils/param"
 )
 
 var commentService = service.CommentService{}
@@ -24,11 +25,11 @@ type CommentRequestHandler struct{}
 func (handler *CommentRequestHandler) Create(ctx *gin.Context) {
 	var comment entity.Comment
 	if err := ctx.ShouldBind(&comment); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	if err := commentService.Create(ctx, comment); err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.Success(ctx)
@@ -45,10 +46,10 @@ func (handler *CommentRequestHandler) Create(ctx *gin.Context) {
 //	@Router			/comment/queryComments/{articleId} [GET]
 //	@Security		BearerAuth
 func (handler *CommentRequestHandler) FindCommentsByArticleId(ctx *gin.Context) {
-	articleId := ctx.GetInt64("articleId")
+	articleId := param.Path(ctx).Name("articleId").Value().GetInt64()
 	comments, err := commentService.FindCommentsByArticleId(articleId)
 	if err != nil {
-		response.FailWithMessage(ctx, err.Error())
+		_ = ctx.Error(err)
 		return
 	}
 	response.SuccessWithData(ctx, comments)
