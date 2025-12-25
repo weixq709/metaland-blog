@@ -85,47 +85,7 @@
                 }
             }
         },
-        "/article/findAll": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "根据条件分页查询，支持查询指定用户文章列表",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章管理"
-                ],
-                "summary": "分页查询",
-                "responses": {
-                    "200": {
-                        "description": "文章列表",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/entity.Article"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/article/{articleId}": {
+        "/article/findById/{articleId}": {
             "get": {
                 "security": [
                     {
@@ -169,7 +129,72 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/article/findByPage": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据条件分页查询，支持查询指定用户文章列表。pageNum默认值为1，pageSize默认值为10。如果未指定userId，则查询全部用户文章，否则进查询指定用户",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章管理"
+                ],
+                "summary": "分页查询",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页",
+                        "name": "pageNum",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页显示记录条数",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "userId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "文章列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/entity.Article"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/article/{articleId}": {
             "delete": {
                 "security": [
                     {
