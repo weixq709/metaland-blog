@@ -2,7 +2,6 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wxq/metaland-blog/src/xzap/logger"
 )
 
 const (
@@ -35,15 +34,14 @@ func SuccessWithDetail(ctx *gin.Context, message string, data interface{}) {
 }
 
 func Fail(ctx *gin.Context) {
-	ctx.JSON(200, &Result{Code: fail})
+	message := "系统错误"
+	ctx.JSON(200, &Result{Code: fail, Message: &message})
 }
 
 func FailWithMessage(ctx *gin.Context, message string) {
-	logger.Errorf(message)
 	ctx.JSON(200, &Result{Code: fail, Message: &message})
 }
 
 func FailWithDetail(ctx *gin.Context, code int, message string) {
-	logger.Errorf(message)
 	ctx.JSON(200, &Result{Code: code, Message: &message})
 }
