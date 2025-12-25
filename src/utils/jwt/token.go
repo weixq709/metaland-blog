@@ -31,11 +31,11 @@ func Parse(tokenStr string) (map[string]interface{}, error) {
 	})
 
 	if token == nil || err != nil {
-		return nil, errors.Wrap(err, "failed to parse token")
+		return nil, err
 	}
 
 	if !token.Valid {
-		return nil, errors.New("token expired")
+		return nil, errors.New("invalid expired")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
