@@ -26,7 +26,7 @@ func Start() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 
-	r.Use(gin.Recovery())
+	r.Use(middleware.Recover())
 	store := cookie.NewStore([]byte("userInfo"))
 	// 配置 Session
 	store.Options(sessions.Options{
@@ -38,6 +38,7 @@ func Start() {
 		SameSite: http.SameSiteLaxMode, // 防止 CSRF
 	})
 	r.Use(sessions.Sessions("userSession", store))
+	r.Use(middleware.RequestLogger())
 	r.Use(middleware.Authentication())
 
 	contextRouter := r.Group(config.SysConfig.ContextPath)
@@ -45,7 +46,7 @@ func Start() {
 	api.RegisterRouter(contextRouter)
 
 	for _, route := range r.Routes() {
-		logger.Infof("%-6s %-25s --> %s", route.Method, route.Path, route.Handler)
+		logger.Infof("%-6s %-40s --> %s", route.Method, route.Path, route.Handler)
 	}
 
 	srv := &http.Server{
