@@ -26,7 +26,7 @@ func (articleService *articleService) Create(ctx *gin.Context, article entity.Ar
 	}
 	userId := sessions.Default(ctx).Get(constant.UserIdKey).(int64)
 	article.UserID = userId
-	return articleDao.Create(article)
+	return articleDao.Create(&article)
 }
 
 func (articleService *articleService) Update(ctx *gin.Context, article entity.Article) error {
