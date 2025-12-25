@@ -11,5 +11,5 @@ func (api *CommentApi) RegisterRoute(parentRouter *gin.RouterGroup) {
 	router := parentRouter.Group("/comment")
 	commentHandler := &handler.CommentRequestHandler{}
 	router.POST("", commentHandler.Create)
-	router.POST("/queryComments/:articleId", commentHandler.FindCommentsByArticleId)
+	router.GET("/queryComments/:articleId", commentHandler.FindCommentsByArticleId)
 }
